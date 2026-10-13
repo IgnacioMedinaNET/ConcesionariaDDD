@@ -2,12 +2,12 @@ using MediatR;
 
 public class AgregarProveedorCommand : IRequest<Guid>
 {
-    public string Nombre { get; set; }
-    public string Cuil { get; set; }
-    public string Telefono { get; set; }
-    public string Email { get; set; }
-    public string Domicilio { get; set; }
-    public string Servicio { get; set; }
-    public string Observacion { get; set; }
-    public Guid LocalidadId { get; set; }
+    public string Nombre { get; init; }= string.Empty;
+    public string Cuil { get; init; }= string.Empty;
+    public string Telefono { get; init; }= string.Empty;
+    public string Email { get; init; }= string.Empty;
+    public string Domicilio { get; init; }= string.Empty;
+    public string Servicio { get; init; }= string.Empty;
+    public string Observacion { get; init; }= string.Empty;
+    public Guid LocalidadId { get; init; }
 }

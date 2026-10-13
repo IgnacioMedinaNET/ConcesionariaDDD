@@ -104,12 +104,12 @@ public class VendedorRepository : IVendedorRepository
     public async Task<EstadoExistencia> ExistePorDniExcluyendoIdAsync(
         string dni,
         Guid empresaId,
-        Guid clienteId
+        Guid vendedorId
     )
     {
         bool? estado = await _context
             .Vendedores.IgnoreQueryFilters()
-            .Where(v => v.EmpresaId == empresaId && v.Dni == dni && v.Id != clienteId)
+            .Where(v => v.EmpresaId == empresaId && v.Dni == dni && v.Id != vendedorId)
             .Select(v => (bool?)v.Eliminado)
             .FirstOrDefaultAsync();
 
@@ -122,7 +122,7 @@ public class VendedorRepository : IVendedorRepository
     public async Task<EstadoExistencia> ExistePorEmailExcluyendoIdAsync(
         string email,
         Guid empresaId,
-        Guid clienteId
+        Guid vendedorId
     )
     {
         bool? estado = await _context
@@ -130,7 +130,7 @@ public class VendedorRepository : IVendedorRepository
             .Where(v =>
                 v.EmpresaId == empresaId
                 && v.Email.ToLower() == email.ToLower().Trim()
-                && v.Id != clienteId
+                && v.Id != vendedorId
             )
             .Select(v => (bool?)v.Eliminado)
             .FirstOrDefaultAsync();

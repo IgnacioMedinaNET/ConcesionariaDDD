@@ -26,13 +26,13 @@ namespace Concesionaria.Domain.Interfaces.IRepositories
         Task<EstadoExistencia> ExistePorDniExcluyendoIdAsync(
             string dni,
             Guid empresaId,
-            Guid clienteId
+            Guid vendedorId
         );
     
         Task<EstadoExistencia> ExistePorEmailExcluyendoIdAsync(
             string email,
             Guid empresaId,
-            Guid clienteId
+            Guid vendedorId
         );
     }
 }
