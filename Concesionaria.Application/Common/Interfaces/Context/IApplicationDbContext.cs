@@ -5,6 +5,8 @@ using Concesionaria.Domain.Ubicaciones;
 using Concesionaria.Domain.Cuentas;
 using Concesionaria.Domain.Usuarios;
 using System.Data;
+using Concesionaria.Domain.AsientosContables;
+using Concesionaria.Domain.AsientosDetalle;
 
 namespace Concesionaria.Application.Common.Interfaces;
 
@@ -26,6 +28,8 @@ public interface IApplicationDbContext
     DbSet<Proveedor> Proveedores { get; }
     DbSet<Cliente> Clientes { get; }
     DbSet<Vendedor> Vendedores { get; }
+    DbSet<AsientoContable> AsientosContables { get; }
+    DbSet<DetalleAsientoContable> DetallesAsientoContable { get; }
 
     Task<IApplicationTransaction> BeginTransactionAsync(
         IsolationLevel isolationLevel = IsolationLevel.ReadCommitted,

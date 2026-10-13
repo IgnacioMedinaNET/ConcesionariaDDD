@@ -32,4 +32,7 @@ public interface ICuentaRepository
     );
 
     Task<bool> TieneCuentasHijasActivasAsync(Guid empresaId, Guid cuentaId);
+
+    // TAREA PARA OBTENER POR ID
+    Task<Cuenta?> ObtenerPorIdAsync(Guid id, Guid empresaId);
 }

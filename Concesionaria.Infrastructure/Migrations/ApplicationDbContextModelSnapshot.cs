@@ -107,6 +107,82 @@ namespace Concesionaria.Infrastructure.Migrations
                     b.ToTable("Clientes");
                 });
 
+            modelBuilder.Entity("Concesionaria.Domain.AsientosContables.AsientoContable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Concepto")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Eliminado")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("EmpresaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Estado")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("Origen")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId");
+
+                    b.ToTable("AsientosContables", (string)null);
+                });
+
+            modelBuilder.Entity("Concesionaria.Domain.AsientosDetalle.DetalleAsientoContable", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AsientoContableId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CuentaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("Debe")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<decimal>("Haber")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("Observacion")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AsientoContableId");
+
+                    b.HasIndex("CuentaId");
+
+                    b.ToTable("DetallesAsientoContable", (string)null);
+                });
+
             modelBuilder.Entity("Concesionaria.Domain.Cuentas.Cuenta", b =>
                 {
                     b.Property<Guid>("Id")
@@ -963,6 +1039,36 @@ namespace Concesionaria.Infrastructure.Migrations
                     b.Navigation("Localidad");
                 });
 
+            modelBuilder.Entity("Concesionaria.Domain.AsientosContables.AsientoContable", b =>
+                {
+                    b.HasOne("Concesionaria.Domain.Empresas.Empresa", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("Concesionaria.Domain.AsientosDetalle.DetalleAsientoContable", b =>
+                {
+                    b.HasOne("Concesionaria.Domain.AsientosContables.AsientoContable", "AsientoContable")
+                        .WithMany("Detalles")
+                        .HasForeignKey("AsientoContableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Concesionaria.Domain.Cuentas.Cuenta", "Cuenta")
+                        .WithMany()
+                        .HasForeignKey("CuentaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("AsientoContable");
+
+                    b.Navigation("Cuenta");
+                });
+
             modelBuilder.Entity("Concesionaria.Domain.Cuentas.Cuenta", b =>
                 {
                     b.HasOne("Concesionaria.Domain.Cuentas.Cuenta", "CuentaPadre")
@@ -1253,6 +1359,11 @@ namespace Concesionaria.Infrastructure.Migrations
                     b.Navigation("Localidad");
 
                     b.Navigation("Sucursal");
+                });
+
+            modelBuilder.Entity("Concesionaria.Domain.AsientosContables.AsientoContable", b =>
+                {
+                    b.Navigation("Detalles");
                 });
 
             modelBuilder.Entity("Concesionaria.Domain.Cuentas.Cuenta", b =>

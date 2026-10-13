@@ -8,8 +8,15 @@ namespace TuProyecto.Api.Middleware
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlingMiddleware> _logger;
 
-        public ExceptionHandlingMiddleware(RequestDelegate next) => _next = next;
+        public ExceptionHandlingMiddleware(
+            RequestDelegate next,
+            ILogger<ExceptionHandlingMiddleware> logger)
+        {
+            _next = next;
+            _logger = logger;
+        }
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -56,8 +63,14 @@ namespace TuProyecto.Api.Middleware
                 await context.Response.WriteAsJsonAsync(
                     new { Message = "El almacenamiento de archivos no está disponible." });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.LogError(
+                    ex,
+                    "Unhandled exception processing {Method} {Path}",
+                    context.Request.Method,
+                    context.Request.Path);
+
                 context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                 context.Response.ContentType = "application/json";
                 await context.Response.WriteAsJsonAsync(

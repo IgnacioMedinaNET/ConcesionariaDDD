@@ -154,6 +154,10 @@ public static class DependencyInjection
         services.AddScoped<ISucursalRepository, SucursalRepository>();
 
         services.AddScoped<ICuentaRepository, CuentaRepository>();
+        
+        services.AddScoped<IAsientoContableRepository, AsientoContableRepository>();
+
+        //services.AddScoped<IAsientoDetalleRepository, AsientoDetalleRepository>();
 
         services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 

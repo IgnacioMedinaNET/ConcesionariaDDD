@@ -1,6 +1,7 @@
 using Concesionaria.Application.Common.Interfaces;
 using Concesionaria.Domain.Common;
 using Concesionaria.Domain.Common.Interfaces;
+using Concesionaria.Domain.AsientosContables;
 using Concesionaria.Domain.Cuentas;
 using Concesionaria.Domain.Empresas;
 using Concesionaria.Domain.Identity;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using Concesionaria.Domain.AsientosDetalle;
 
 namespace Concesionaria.Infrastructure.Persistence;
 
@@ -44,6 +46,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
     public DbSet<Proveedor> Proveedores => Set<Proveedor>();
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Vendedor> Vendedores => Set<Vendedor>();
+    public DbSet<AsientoContable> AsientosContables => Set<AsientoContable>();
+    public DbSet<DetalleAsientoContable> DetallesAsientoContable => Set<DetalleAsientoContable>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -139,20 +143,20 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         .WithMany()
         .HasForeignKey(m => m.EmpresaId)
         .OnDelete(DeleteBehavior.NoAction);
-   
+
         builder.Entity<Cliente>(entity =>
         {
-            
-        entity.HasOne(m => m.Localidad)
-        .WithMany()
-        .HasForeignKey(m => m.LocalidadId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
-        entity.HasOne(m => m.Empresa)
-        .WithMany()
-        .HasForeignKey(m => m.EmpresaId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
+
+            entity.HasOne(m => m.Localidad)
+            .WithMany()
+            .HasForeignKey(m => m.LocalidadId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+            entity.HasOne(m => m.Empresa)
+            .WithMany()
+            .HasForeignKey(m => m.EmpresaId)
+            .OnDelete(DeleteBehavior.NoAction);
+
         });
 
         builder.Entity<Proveedor>()
@@ -161,44 +165,83 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         .HasForeignKey(m => m.LocalidadId)
         .OnDelete(DeleteBehavior.NoAction);
 
-         builder.Entity<Vehiculo>(entity =>
+        builder.Entity<Vehiculo>(entity =>
+       {
+
+           entity.HasOne(m => m.Empresa)
+            .WithMany()
+            .HasForeignKey(m => m.EmpresaId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+           entity.HasOne(m => m.Modelo)
+            .WithMany()
+            .HasForeignKey(m => m.ModeloId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+           entity.HasOne(m => m.Sucursal)
+            .WithMany()
+            .HasForeignKey(m => m.SucursalId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+       });
+
+        builder.Entity<Vendedor>(entity =>
+       {
+
+           entity.HasOne(m => m.Empresa)
+            .WithMany()
+            .HasForeignKey(m => m.EmpresaId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+           entity.HasOne(m => m.Localidad)
+            .WithMany()
+            .HasForeignKey(m => m.LocalidadId)
+            .OnDelete(DeleteBehavior.NoAction);
+
+           entity.HasOne(m => m.Sucursal)
+            .WithMany()
+            .HasForeignKey(m => m.SucursalId)
+            .OnDelete(DeleteBehavior.NoAction);
+       });
+
+        builder.Entity<AsientoContable>(entity =>
         {
-            
-        entity.HasOne(m => m.Empresa)
-        .WithMany()
-        .HasForeignKey(m => m.EmpresaId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
-        entity.HasOne(m => m.Modelo)
-        .WithMany()
-        .HasForeignKey(m => m.ModeloId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
-        entity.HasOne(m => m.Sucursal)
-        .WithMany()
-        .HasForeignKey(m => m.SucursalId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
+            entity.ToTable("AsientosContables");
+            entity.HasKey(a => a.Id);
+
+            entity.Property(a => a.Concepto)
+                .IsRequired()
+                .HasMaxLength(250);
+
+            entity.HasMany(a => a.Detalles)
+                .WithOne(d => d.AsientoContable)
+                .HasForeignKey(d => d.AsientoContableId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
-         builder.Entity<Vendedor>(entity =>
+        builder.Entity<DetalleAsientoContable>(entity =>
         {
-            
-        entity.HasOne(m => m.Empresa)
-        .WithMany()
-        .HasForeignKey(m => m.EmpresaId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
-        entity.HasOne(m => m.Localidad)
-        .WithMany()
-        .HasForeignKey(m => m.LocalidadId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
-        entity.HasOne(m => m.Sucursal)
-        .WithMany()
-        .HasForeignKey(m => m.SucursalId)
-        .OnDelete(DeleteBehavior.NoAction);
-      
+            entity.ToTable("DetallesAsientoContable");
+            entity.HasKey(d => d.Id);
+
+            entity.Property(d => d.Id)
+                .ValueGeneratedNever();
+
+            entity.Property(d => d.Debe)
+                .IsRequired()
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(d => d.Haber)
+                .IsRequired()
+                .HasColumnType("decimal(18, 2)");
+
+            entity.Property(d => d.Observacion)
+                .HasMaxLength(500);
+
+            entity.HasOne(d => d.Cuenta)
+                .WithMany()
+                .HasForeignKey(d => d.CuentaId)
+                .OnDelete(DeleteBehavior.NoAction);
         });
 
         ApplyGlobalFilters(builder);
@@ -316,6 +359,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplica
         }
     }
 }
-
 
 

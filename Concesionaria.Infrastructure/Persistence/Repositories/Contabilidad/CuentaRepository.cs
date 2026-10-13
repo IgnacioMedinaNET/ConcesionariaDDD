@@ -155,4 +155,10 @@ public class CuentaRepository : ICuentaRepository
             c.EmpresaId == empresaId && c.CuentaPadreId == cuentaId);
     }
 
+    public async Task<Cuenta?> ObtenerPorIdAsync(Guid id, Guid empresaId)
+    {
+        return await _context.Cuentas
+            .FirstOrDefaultAsync(c => c.Id == id && c.EmpresaId == empresaId && !c.Eliminado);
+    }
+
 }
